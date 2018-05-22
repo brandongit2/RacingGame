@@ -21,33 +21,18 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Renderer {
-    private float fov;
-    private static final float Z_NEAR = 0.01f;
-    private static final float Z_FAR  = 1000.0f;
-    private Matrix4f projectionMatrix;
-    int screenWidth;
-    int screenHeight;
-    private HashMap<String, Integer> uniforms = new HashMap<>();
-    private static ArrayList<Integer> textureIds = new ArrayList<>();
+    private static HashMap<String, Integer> uniforms   = new HashMap<>();
+    private static ArrayList<Integer>       textureIds = new ArrayList<>();
     
-    /**
-     * Sets up variables for a renderer.
-     * @param fov The FOV (in degrees).
-     */
-    public Renderer(float fov) {
-        this.fov = (float) Math.toRadians(fov);
-        changeProjectionMatrix(screenWidth, screenHeight);
-    }
-    
-    public void changeProjectionMatrix(int width, int height) {
-        float aspectRatio = (float) width / height;
-        projectionMatrix = new Matrix4f().perspective(fov, aspectRatio, Z_NEAR, Z_FAR);
+    public Renderer(String name) {
+        Game.renderers.put(name, this);
+        Game.setCurrentRenderer(name);
     }
     
     public void loadTexture(String filePath) {
         try {
             PNGDecoder decoder = new PNGDecoder(new FileInputStream(filePath));
-    
+            
             ByteBuffer textureBuffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
             decoder.decode(textureBuffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
             textureBuffer.flip();
@@ -69,20 +54,27 @@ public class Renderer {
         }
     }
     
-    public void render(ArrayList<GameObject> objects, int width, int height, boolean hasBeenResized) {
-        if (hasBeenResized) {
-            glViewport(0, 0, width, height);
+    public void render(ArrayList<GameObject> objects) {
+        Window window = Game.getCurrentWindow();
+        Camera camera = Game.getCurrentCamera();
+        
+        if (window.hasBeenResized()) {
+            glViewport(0, 0, window.getWidth(), window.getHeight());
             
-            setUniform("projectionMatrix", projectionMatrix);
+            setUniform("projectionMatrix", camera.getProjectionMatrix());
         }
-    
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        
+        glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        setUniform("viewMatrix", camera.getViewMatrix());
         
         for (GameObject object : objects) {
             glBindVertexArray(object.getVertexVaoId());
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
+            
+            setUniform("modelMatrix", object.getModelMatrix());
             
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureIds.get(0));
@@ -92,7 +84,7 @@ public class Renderer {
             glDisableVertexAttribArray(1);
             glBindVertexArray(0);
         }
-    
+        
         glfwSwapBuffers(glfwGetCurrentContext());
     }
     

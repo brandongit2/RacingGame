@@ -1,5 +1,11 @@
 package game;
 
+import engine.Game;
+import engine.GameObject;
+
+import java.util.ArrayList;
+
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 public class GameLoop implements Runnable {
@@ -11,7 +17,12 @@ public class GameLoop implements Runnable {
         long startTime   = System.nanoTime();
         long timeElapsed = 0;
         
-        while (!glfwWindowShouldClose(RacingGame.window.handle)) {
+        while (!glfwWindowShouldClose(Game.getCurrentWindow().getHandle())) {
+            ArrayList<GameObject> objects = Game.getCurrentWindow().getObjects();
+            for (GameObject object : objects) {
+                object.rotate(0.0f, 1.0f, 0.0f);
+            }
+            
             timeElapsed = startTime - System.nanoTime();
             if (timeElapsed < 1e7) {
                 try {
@@ -21,7 +32,18 @@ public class GameLoop implements Runnable {
                     System.exit(1);
                 }
             }
+            
+            input();
+            
+            if (RacingGame.isKeyPressed(GLFW_KEY_LEFT)) {
+                RacingGame.rectangle.translate(0.1f, 0.0f, 0.0f);
+            }
+            
             startTime = System.nanoTime();
         }
+    }
+    
+    private void input() {
+    
     }
 }

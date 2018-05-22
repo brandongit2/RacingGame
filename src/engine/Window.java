@@ -18,14 +18,12 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class Window {
     private int                   width;
     private int                   height;
-    public  long                  handle;
+    private long                  handle;
     private int                   programId;
     private int                   vertexShaderId;
     private int                   fragmentShaderId;
-    private ArrayList<GameObject> objects = new ArrayList<>();
-    private Renderer renderer;
-    
-    boolean hasBeenResized = true;
+    private ArrayList<GameObject> objects        = new ArrayList<>();
+    private boolean               hasBeenResized = true;
     
     /**
      * Create a window.
@@ -34,7 +32,10 @@ public class Window {
      * @param height The height of the window.
      * @param title  The title of the window.
      */
-    public Window(int width, int height, String title, Renderer renderer) {
+    public Window(int width, int height, String title, String name) {
+        Game.windows.put(name, this);
+        Game.setCurrentWindow(name);
+        
         // Create GLFW window.
         handle = glfwCreateWindow(width, height, title, NULL, NULL);
         if (handle == NULL) { // Verify that the window was created.
@@ -42,22 +43,20 @@ public class Window {
             throw new RuntimeException("Failed to create the GLFW window.");
         }
         
-        this.renderer = renderer;
-        
         // Update window dimensions
         IntBuffer w = BufferUtils.createIntBuffer(1);
         IntBuffer h = BufferUtils.createIntBuffer(1);
         glfwGetWindowSize(handle, w, h);
         this.width = w.get(0);
         this.height = h.get(0);
-        Window.this.renderer.changeProjectionMatrix(this.width, this.height);
+        Game.getCurrentCamera().changeProjectionMatrix(this.width, this.height);
         
         // Set up resize callback to change fields 'width' and 'height'.
         glfwSetFramebufferSizeCallback(handle, (long handle, int newWidth, int newHeight) -> {
             Window.this.width = newWidth;
             Window.this.height = newHeight;
             
-            Window.this.renderer.changeProjectionMatrix(newWidth, newHeight);
+            Game.getCurrentCamera().changeProjectionMatrix(newWidth, newHeight);
             
             hasBeenResized = true;
         });
@@ -117,6 +116,8 @@ public class Window {
     }
     
     public void linkShaderProgram() {
+        Renderer renderer = Game.getCurrentRenderer();
+        
         glLinkProgram(programId);
         if (glGetProgrami(programId, GL_LINK_STATUS) == NULL) {
             throw new RuntimeException("Error linking shader program. Code " + glGetProgramInfoLog(programId, 2048));
@@ -129,22 +130,25 @@ public class Window {
         
         try {
             renderer.createUniform("projectionMatrix", programId);
+            renderer.createUniform("viewMatrix", programId);
+            renderer.createUniform("modelMatrix", programId);
             renderer.createUniform("textureSampler", programId);
         } catch (RuntimeException e) {
             e.printStackTrace();
             System.exit(1);
         }
         
-    
         glUseProgram(programId);
     }
     
     public void addObject(GameObject object) {
+        Game.getCurrentRenderer().setUniform("modelMatrix", object.getModelMatrix());
+        
         objects.add(object);
     }
     
     public void render() {
-        renderer.render(objects, width, height, hasBeenResized);
+        Game.getCurrentRenderer().render(objects);
         if (hasBeenResized) {
             hasBeenResized = false;
         }
@@ -158,8 +162,16 @@ public class Window {
         return height;
     }
     
-    public void changeRenderer(Renderer renderer) {
-        this.renderer = renderer;
+    public long getHandle() {
+        return handle;
+    }
+    
+    public ArrayList<GameObject> getObjects() {
+        return objects;
+    }
+    
+    public boolean hasBeenResized() {
+        return hasBeenResized;
     }
     
     public void cleanUp() {
@@ -170,6 +182,5 @@ public class Window {
             e.printStackTrace();
             System.exit(1);
         }
-        
     }
 }
