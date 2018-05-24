@@ -34,26 +34,39 @@ public class Renderer {
             setUniform("projectionMatrix", camera.getProjectionMatrix());
         }
         
-        glClearColor(0.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.0f, 0.6f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         setUniform("viewMatrix", camera.getViewMatrix());
         
         for (GameObject object : objects) {
-            System.out.println(object);
-            glBindVertexArray(object.getVertexVaoId());
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
-            
-            setUniform("modelMatrix", object.getModelMatrix());
-            
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, object.getTextureId());
-            glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
-            
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
-            glBindVertexArray(0);
+            if (object.isTextured()) {
+                glBindVertexArray(object.getVertexVaoId());
+                glEnableVertexAttribArray(0);
+                glEnableVertexAttribArray(1);
+
+                setUniform("modelMatrix", object.getModelMatrix());
+
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, object.getTextureId());
+                glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+                glDisableVertexAttribArray(0);
+                glDisableVertexAttribArray(1);
+                glBindVertexArray(0);
+            } else {
+                System.out.println(object);
+
+                glBindVertexArray(object.getVertexVaoId());
+                glEnableVertexAttribArray(0);
+
+                setUniform("modelMatrix", object.getModelMatrix());
+
+                glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
+
+                glDisableVertexAttribArray(0);
+                glBindVertexArray(0);
+            }
         }
         
         glfwSwapBuffers(glfwGetCurrentContext());

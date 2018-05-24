@@ -17,11 +17,11 @@ public class GameLoop implements Runnable {
         long startTime   = System.nanoTime();
         long timeElapsed;
         
-        while (!glfwWindowShouldClose(Game.getCurrentWindow().getHandle())) {
+        while (RacingGame.gameIsRunning) {
             ArrayList<GameObject> objects = Game.getCurrentWindow().getObjects();
-            for (GameObject object : objects) {
-                object.rotate(0.0f, 0.3f, 0.0f);
-            }
+//            for (GameObject object : objects) {
+//                object.rotate(0.0f, 0.3f, 0.0f);
+//            }
             
             timeElapsed = startTime - System.nanoTime();
             if (timeElapsed < 1e7) {
