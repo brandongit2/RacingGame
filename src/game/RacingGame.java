@@ -6,20 +6,18 @@ import org.joml.Vector3f;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class RacingGame {
-    static GameObject rectangle;
-    
     private void run() {
         Util.init();
         
+        Window window = new Window(1600, 900, "Racing Game", "mainWindow");
         Camera camera = new Camera(
           new Vector3f(
             0, 0, 0
           ), new Vector3f(
           0, 0, 0
-          ), 60.0f, "primaryCamera"
+        ), 60.0f, "primaryCamera"
         );
         Renderer renderer = new Renderer("mainRenderer");
-        Window window = new Window(1600, 900, "Racing Game", "mainWindow");
         
         glfwSetKeyCallback(window.getHandle(), (long receiver, int key, int scanCode, int action, int mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
@@ -33,31 +31,44 @@ public class RacingGame {
         Game.getCurrentWindow().setFragmentShader("/game/fragment.glsl");
         Game.getCurrentWindow().linkShaderProgram();
         
-        renderer.loadTexture("src/res/emoji.png");
+        //generateFloor();
         
-        rectangle = new GameObject(
+        // Creates a cube.
+        window.addObject(new GameObject(
           new Vector3f(
-            0f, 0f, -1f
+            0f, 0f, -3f
           ), new Vector3f(
           1f, 1f, 1f
         ), new Vector3f(
           0f, 0f, 0f
-        ), new float[]{
-          -0.5f, 0.5f, -1.0f,
-          -0.5f, -0.5f, -1.0f,
-          0.5f, -0.5f, -1.0f,
-          0.5f, 0.5f, -1.0f
-        }, new float[]{
-          0.0f, 0.0f,
-          0.0f, 1.0f,
-          1.0f, 1.0f,
-          1.0f, 0.0f
-        }, new int[]{
-          0, 1, 3,
-          3, 1, 2
-        });
-        window.addObject(rectangle);
-    
+        ), new float[] {
+          -0.5f, 0.5f, 0.5f,
+          -0.5f, -0.5f, 0.5f,
+          0.5f, -0.5f, 0.5f,
+          0.5f, 0.5f, 0.5f,
+          -0.5f, 0.5f, -0.5f,
+          0.5f, 0.5f, -0.5f,
+          -0.5f, -0.5f, -0.5f,
+          0.5f, -0.5f, -0.5f
+        }, "res/emoji.png",
+          new float[] {
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f
+          }, new int[] {
+          0, 1, 3, 3, 1, 2,
+          4, 0, 3, 5, 4, 3,
+          3, 2, 7, 5, 3, 7,
+          6, 1, 0, 6, 0, 4,
+          2, 1, 6, 2, 6, 7,
+          7, 6, 4, 7, 4, 5
+        }));
+        
         Thread gameLoop = new Thread(new GameLoop(), "gameLoopThread");
         gameLoop.start();
         
@@ -73,6 +84,29 @@ public class RacingGame {
             
             glfwPollEvents();
         }
+    }
+    
+    private void generateFloor() {
+        Game.getCurrentWindow().addObject(new GameObject(
+          new Vector3f(0f, -2f, 0f),
+          new Vector3f(0f, 0f, 0f),
+          new Vector3f(0f, 0f, 0f),
+          new float[] {
+            -20f, 20f, 0f,
+            -20f, -20f, 0f,
+            20f, -20f, 0f,
+            20f, 20f, 0f
+          }, "res/floor.png",
+          new float[] {
+            0f, 0f,
+            0f, 1f,
+            1f, 1f,
+            1f, 0f
+          }, new int[] {
+            0, 1, 2,
+            2, 3, 0
+          }
+        ));
     }
     
     static boolean isKeyPressed(int keyCode) {

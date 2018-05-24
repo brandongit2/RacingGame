@@ -4,31 +4,31 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera extends Entity {
-    protected static     Matrix4f projectionMatrix;
-    protected static     Matrix4f viewMatrix = new Matrix4f();
+    private static     Matrix4f projectionMatrix;
+    private static     Matrix4f viewMatrix = new Matrix4f();
     private Vector3f position = new Vector3f(0, 0, 0);
     private Vector3f rotation = new Vector3f(0, 0, 0);
     private              float    fov;
     private static final float    Z_NEAR = 0.01f;
     private static final float    Z_FAR  = 1000.0f;
     
-    int screenWidth;
-    int screenHeight;
-    
     public Camera(Vector3f cameraPos, Vector3f cameraRot, float fov, String name) {
         Game.cameras.put(name, this);
         Game.setCurrentCamera(name);
         
+        viewMatrix.translation(cameraPos);
+        rotate(cameraRot.x, cameraRot.y, cameraRot.z);
+        
         this.fov = (float) Math.toRadians(fov);
-        changeProjectionMatrix(screenWidth, screenHeight);
+        changeProjectionMatrix(Game.getCurrentWindow().getWidth(), Game.getCurrentWindow().getHeight());
     }
     
-    public void changeProjectionMatrix(int width, int height) {
+    void changeProjectionMatrix(int width, int height) {
         float aspectRatio = (float) width / height;
         projectionMatrix = new Matrix4f().perspective(fov, aspectRatio, Z_NEAR, Z_FAR);
     }
     
-    public Matrix4f getProjectionMatrix() {
+    Matrix4f getProjectionMatrix() {
         return projectionMatrix;
     }
     
@@ -50,7 +50,7 @@ public class Camera extends Entity {
                   .rotateZ(dz);
     }
     
-    public Matrix4f getViewMatrix() {
+    Matrix4f getViewMatrix() {
         return viewMatrix;
     }
 }

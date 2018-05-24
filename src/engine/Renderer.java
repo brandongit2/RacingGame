@@ -1,12 +1,8 @@
 package engine;
 
-import de.matthiasmann.twl.utils.PNGDecoder;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,36 +18,10 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Renderer {
     private static HashMap<String, Integer> uniforms   = new HashMap<>();
-    private static ArrayList<Integer>       textureIds = new ArrayList<>();
     
     public Renderer(String name) {
         Game.renderers.put(name, this);
         Game.setCurrentRenderer(name);
-    }
-    
-    public void loadTexture(String filePath) {
-        try {
-            PNGDecoder decoder = new PNGDecoder(new FileInputStream(filePath));
-            
-            ByteBuffer textureBuffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
-            decoder.decode(textureBuffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
-            textureBuffer.flip();
-            
-            int textureId = glGenTextures();
-            glBindTexture(GL_TEXTURE_2D, textureId);
-            textureIds.add(textureId);
-            
-            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
-            glGenerateMipmap(GL_TEXTURE_2D);
-            
-            setUniform("textureSampler", 0);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
     
     public void render(ArrayList<GameObject> objects) {
@@ -70,6 +40,7 @@ public class Renderer {
         setUniform("viewMatrix", camera.getViewMatrix());
         
         for (GameObject object : objects) {
+            System.out.println(object);
             glBindVertexArray(object.getVertexVaoId());
             glEnableVertexAttribArray(0);
             glEnableVertexAttribArray(1);
@@ -77,7 +48,7 @@ public class Renderer {
             setUniform("modelMatrix", object.getModelMatrix());
             
             glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, textureIds.get(0));
+            glBindTexture(GL_TEXTURE_2D, object.getTextureId());
             glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
             
             glDisableVertexAttribArray(0);
@@ -96,7 +67,7 @@ public class Renderer {
         uniforms.put(name, uniformLocation);
     }
     
-    public void setUniform(String name, Matrix4f value) {
+    void setUniform(String name, Matrix4f value) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer uniformBuffer = stack.mallocFloat(16);
             value.get(uniformBuffer);
@@ -104,13 +75,7 @@ public class Renderer {
         }
     }
     
-    public void setUniform(String name, int value) {
+    void setUniform(String name, int value) {
         glUniform1i(uniforms.get(name), value);
-    }
-    
-    public static void cleanUp() {
-        for (int texture : textureIds) {
-            glDeleteTextures(texture);
-        }
     }
 }

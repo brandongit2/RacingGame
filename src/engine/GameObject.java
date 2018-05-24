@@ -1,37 +1,46 @@
 package engine;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 public class GameObject extends Entity {
     private static List<Integer>         vbos        = new ArrayList<>();
     private static List<Integer>         vaos        = new ArrayList<>();
     private        ArrayList<GameObject> gameObjects = new ArrayList<>();
-    private Vector3f scale = new Vector3f(1f, 1f, 1f);
+    private        Vector3f              scale       = new Vector3f(1f, 1f, 1f);
+    private int textureId;
     
     private        int      vertexVaoId;
     private        int      vertexCount;
     private static Matrix4f modelMatrix = new Matrix4f();
     
-    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, float[] textureCoords, int[] indices) {
+    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, String textureLocation, float[] textureCoords, int[] indices) {
         modelMatrix.translate(pos.x, pos.y, pos.z)
-                   .scale(scale.x, scale.y, scale.z)
-                   .rotateX(rot.x)
-                   .rotateY(rot.y)
-                   .rotateZ(rot.z);
+                   .scale(scale.x, scale.y, scale.z);
+        modelMatrix.rotate((float) Math.toRadians(rot.z), new Vector3f(0, 0, 1));
+        modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(0, 1, 0));
+        modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(1, 0, 0));
+        
+        position = pos;
+        rotation = rot;
+        this.scale = scale;
+        
+        textureId = loadTexture(textureLocation);
         
         vertexCount = indices.length;
         
@@ -102,27 +111,53 @@ public class GameObject extends Entity {
         rotation.x %= 360;
         rotation.y %= 360;
         rotation.z %= 360;
-        System.out.println(rotation);
-    
+        
         modelMatrix.rotate((float) Math.toRadians(dz), new Vector3f(0, 0, 1));
         modelMatrix.rotate((float) Math.toRadians(dy), new Vector3f(0, 1, 0));
         modelMatrix.rotate((float) Math.toRadians(dx), new Vector3f(1, 0, 0));
     }
     
-    public Matrix4f getModelMatrix() {
+    public int loadTexture(String filePath) {
+        try {
+            PNGDecoder decoder = new PNGDecoder(new FileInputStream(filePath));
+            
+            ByteBuffer textureBuffer = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
+            decoder.decode(textureBuffer, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
+            textureBuffer.flip();
+            
+            int textureId = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            
+            Game.getCurrentRenderer().setUniform("textureSampler", 0);
+            
+            return textureId;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+            return -1;
+        }
+    }
+    
+    int getTextureId() {
+        return textureId;
+    }
+    
+    Matrix4f getModelMatrix() {
         return modelMatrix;
     }
     
-    public int getVertexVaoId() {
+    int getVertexVaoId() {
         return vertexVaoId;
     }
     
-    public int getVertexCount() {
+    int getVertexCount() {
         return vertexCount;
-    }
-    
-    public ArrayList<GameObject> getGameObjects() {
-        return gameObjects;
     }
     
     public static void delete() {

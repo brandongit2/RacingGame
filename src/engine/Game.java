@@ -3,12 +3,12 @@ package engine;
 import java.util.HashMap;
 
 public class Game {
-    protected static HashMap<String, Window>   windows         = new HashMap<>();
-    protected static HashMap<String, Renderer> renderers       = new HashMap<>();
-    protected static HashMap<String, Camera>   cameras         = new HashMap<>();
-    protected static String                       currentWindow;
-    protected static String                       currentRenderer;
-    protected static String                       currentCamera;
+    static         HashMap<String, Window>   windows   = new HashMap<>();
+    static         HashMap<String, Renderer> renderers = new HashMap<>();
+    static         HashMap<String, Camera>   cameras   = new HashMap<>();
+    private static String                    currentWindow;
+    private static String                    currentRenderer;
+    private static String                    currentCamera;
     
     public static void setCurrentWindow(String newWindow) {
         currentWindow = newWindow;
