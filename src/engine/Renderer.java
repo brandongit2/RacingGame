@@ -41,6 +41,7 @@ public class Renderer {
         
         for (GameObject object : objects) {
             if (object.isTextured()) {
+                System.out.println("yaaaaah");
                 glBindVertexArray(object.getVertexVaoId());
                 glEnableVertexAttribArray(0);
                 glEnableVertexAttribArray(1);
@@ -55,8 +56,6 @@ public class Renderer {
                 glDisableVertexAttribArray(1);
                 glBindVertexArray(0);
             } else {
-                System.out.println(object);
-
                 glBindVertexArray(object.getVertexVaoId());
                 glEnableVertexAttribArray(0);
 

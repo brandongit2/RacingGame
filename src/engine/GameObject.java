@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -30,14 +31,44 @@ public class GameObject extends Entity {
     private boolean isTextured = false;
 
     public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, String textureLocation, float[] textureCoords, int[] indices) {
-        this(pos, scale, rot, vertices, indices);
+        modelMatrix.translate(pos.x, pos.y, pos.z)
+                .scale(scale.x, scale.y, scale.z);
+        modelMatrix.rotate((float) Math.toRadians(rot.z), new Vector3f(0, 0, 1));
+        modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(0, 1, 0));
+        modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(1, 0, 0));
+
+        position = pos;
+        rotation = rot;
+        this.scale = scale;
+
+        vertexCount = indices.length;
 
         isTextured = true;
         textureId = loadTexture(textureLocation);
 
+        IntBuffer indexBuffer;
+        int indicesVboId;
+        FloatBuffer vertexBuffer;
+        int vertexVboId;
         FloatBuffer textureCoordBuffer;
         int textureVboId;
         try (MemoryStack stack = MemoryStack.stackPush()) {
+            // Create index buffer.
+            indexBuffer = stack.callocInt(indices.length + 1);
+            indexBuffer.put(indices).flip();
+
+            // Create index VBO.
+            indicesVboId = glGenBuffers();
+            vbos.add(indicesVboId);
+
+            // Create vertex buffer.
+            vertexBuffer = stack.callocFloat(vertices.length);
+            vertexBuffer.put(vertices).flip();
+
+            // Create vertex VBO.
+            vertexVboId = glGenBuffers();
+            vbos.add(vertexVboId);
+
             // Create color buffer.
             textureCoordBuffer = stack.callocFloat(textureCoords.length);
             textureCoordBuffer.put(textureCoords).flip();
@@ -46,6 +77,18 @@ public class GameObject extends Entity {
             textureVboId = glGenBuffers();
             vbos.add(textureVboId);
         }
+
+        // Create vertex VAO.
+        vertexVaoId = glGenVertexArrays();
+        glBindVertexArray(vertexVaoId);
+        vaos.add(vertexVaoId);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertexVboId);
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesVboId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
 
         glBindBuffer(GL_ARRAY_BUFFER, textureVboId);
         glBufferData(GL_ARRAY_BUFFER, textureCoordBuffer, GL_STATIC_DRAW);
@@ -57,7 +100,7 @@ public class GameObject extends Entity {
 
     public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, int[] indices) {
         modelMatrix.translate(pos.x, pos.y, pos.z)
-                .scale(scale.x, scale.y, scale.z);
+                   .scale(scale.x, scale.y, scale.z);
         modelMatrix.rotate((float) Math.toRadians(rot.z), new Vector3f(0, 0, 1));
         modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(0, 1, 0));
         modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(1, 0, 0));
@@ -73,8 +116,9 @@ public class GameObject extends Entity {
         FloatBuffer vertexBuffer;
         int vertexVboId;
         try (MemoryStack stack = MemoryStack.stackPush()) {
+            System.out.println(Arrays.toString(indices));
             // Create index buffer.
-            indexBuffer = stack.callocInt(indices.length + 1);
+            indexBuffer = stack.callocInt(vertexCount + 1);
             indexBuffer.put(indices).flip();
 
             // Create index VBO.
@@ -101,6 +145,7 @@ public class GameObject extends Entity {
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesVboId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_UNSIGNED_INT, false, 0, 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
