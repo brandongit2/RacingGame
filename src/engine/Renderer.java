@@ -40,34 +40,21 @@ public class Renderer {
         setUniform("viewMatrix", camera.getViewMatrix());
         
         for (GameObject object : objects) {
-            if (object.isTextured()) {
-                System.out.println("yaaaaah");
-                glBindVertexArray(object.getVertexVaoId());
-                glEnableVertexAttribArray(0);
-                glEnableVertexAttribArray(1);
+            glBindVertexArray(object.getVertexVaoId());
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
 
-                setUniform("modelMatrix", object.getModelMatrix());
+            setUniform("modelMatrix", object.getModelMatrix());
 
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, object.getTextureId());
-                glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, object.getTextureId());
+            glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
 
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
-                glBindVertexArray(0);
-            } else {
-                glBindVertexArray(object.getVertexVaoId());
-                glEnableVertexAttribArray(0);
-
-                setUniform("modelMatrix", object.getModelMatrix());
-
-                glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
-
-                glDisableVertexAttribArray(0);
-                glBindVertexArray(0);
-            }
+            glDisableVertexAttribArray(0);
+            glDisableVertexAttribArray(1);
+            glBindVertexArray(0);
         }
-        
+    
         glfwSwapBuffers(glfwGetCurrentContext());
     }
     

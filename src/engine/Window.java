@@ -138,7 +138,7 @@ public class Window {
             renderer.createUniform("projectionMatrix", programId);
             renderer.createUniform("viewMatrix", programId);
             renderer.createUniform("modelMatrix", programId);
-            //renderer.createUniform("textureSampler", programId);
+            renderer.createUniform("textureSampler", programId);
         } catch (RuntimeException e) {
             e.printStackTrace();
             System.exit(1);

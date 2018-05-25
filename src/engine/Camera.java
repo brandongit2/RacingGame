@@ -4,13 +4,13 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Camera extends Entity {
-    private static     Matrix4f projectionMatrix;
-    private static     Matrix4f viewMatrix = new Matrix4f();
-    private Vector3f position = new Vector3f(0, 0, 0);
-    private Vector3f rotation = new Vector3f(0, 0, 0);
+    private static       Matrix4f projectionMatrix;
+    private static       Matrix4f viewMatrix = new Matrix4f();
+    private              Vector3f position   = new Vector3f(0, 0, 0);
+    private              Vector3f rotation   = new Vector3f(0, 0, 0);
     private              float    fov;
-    private static final float    Z_NEAR = 0.01f;
-    private static final float    Z_FAR  = 1000.0f;
+    private static final float    Z_NEAR     = 0.01f;
+    private static final float    Z_FAR      = 1000.0f;
     
     public Camera(Vector3f cameraPos, Vector3f cameraRot, float fov, String name) {
         Game.cameras.put(name, this);

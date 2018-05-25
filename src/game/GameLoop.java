@@ -5,9 +5,6 @@ import engine.GameObject;
 
 import java.util.ArrayList;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
-import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
-
 public class GameLoop implements Runnable {
     public void run() {
         loop();
@@ -19,9 +16,7 @@ public class GameLoop implements Runnable {
         
         while (RacingGame.gameIsRunning) {
             ArrayList<GameObject> objects = Game.getCurrentWindow().getObjects();
-//            for (GameObject object : objects) {
-//                object.rotate(0.0f, 0.3f, 0.0f);
-//            }
+                RacingGame.cube.rotate(0.0f, 0.3f, 0.0f);
             
             timeElapsed = startTime - System.nanoTime();
             if (timeElapsed < 1e7) {
