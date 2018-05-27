@@ -6,6 +6,9 @@ import org.joml.Vector3f;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class RacingGame {
+    private double prevMouseX = 0;
+    private double prevMouseY = 0;
+    
     static volatile boolean gameIsRunning = true;
     
     static GameObject cube;
@@ -22,12 +25,17 @@ public class RacingGame {
         ), 60.0f, "primaryCamera"
         );
         Renderer renderer = new Renderer("mainRenderer");
+    
+        glfwSetInputMode(window.getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPosCallback(window.getHandle(), (long evWindow, double mouseX, double mouseY) -> {
+            camera.rotate((float) (mouseY - prevMouseY) / 200, (float) (mouseX - prevMouseX) / 200, 0.0f);
+            prevMouseX = mouseX;
+            prevMouseY = mouseY;
+        });
         
         glfwSetKeyCallback(window.getHandle(), (long receiver, int key, int scanCode, int action, int mods) -> {
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE) {
                 glfwSetWindowShouldClose(receiver, true);
-            } else if (key == GLFW_KEY_W && action == GLFW_REPEAT) {
-                camera.translate(0f, 0f, 0.01f);
             }
         });
         
@@ -109,10 +117,6 @@ public class RacingGame {
             
             glfwPollEvents();
         }
-    }
-    
-    static boolean isKeyPressed(int keyCode) {
-        return glfwGetKey(Game.getCurrentWindow().getHandle(), keyCode) == GLFW_PRESS;
     }
     
     public static void main(String[] args) {
