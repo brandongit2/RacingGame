@@ -22,13 +22,13 @@ public class RacingGame {
             0, 0, 0
           ), new Vector3f(
           0, 0, 0
-        ), 60.0f, "primaryCamera"
+        ), 150.0f, "primaryCamera"
         );
         Renderer renderer = new Renderer("mainRenderer");
     
         glfwSetInputMode(window.getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(window.getHandle(), (long evWindow, double mouseX, double mouseY) -> {
-            camera.rotate((float) (mouseY - prevMouseY) / 200, (float) (mouseX - prevMouseX) / 200, 0.0f);
+            camera.rotate((float) (mouseX - prevMouseX) / 200, (float) (mouseY - prevMouseY) / 200, 0.0f);
             prevMouseX = mouseX;
             prevMouseY = mouseY;
         });

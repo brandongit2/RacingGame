@@ -14,7 +14,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 public class Renderer {
     private static HashMap<String, Integer> uniforms   = new HashMap<>();

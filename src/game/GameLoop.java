@@ -1,9 +1,6 @@
 package game;
 
 import engine.Game;
-import engine.GameObject;
-
-import java.util.ArrayList;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
