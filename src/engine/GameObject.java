@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -28,8 +27,9 @@ public class GameObject extends Entity {
     private        int                   vertexVaoId;
     private        int                   vertexCount;
     private        Matrix4f              modelMatrix = new Matrix4f();
+    private ShaderProgram shaderProgram;
     
-    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, String textureLocation, float[] textureCoords, int[] indices) {
+    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, String textureLocation, float[] textureCoords, int[] indices, ShaderProgram shaderProgram) {
         modelMatrix.translate(pos.x, pos.y, pos.z)
                    .scale(scale.x, scale.y, scale.z);
         modelMatrix.rotate((float) Math.toRadians(rot.z), new Vector3f(0, 0, 1));
@@ -39,6 +39,7 @@ public class GameObject extends Entity {
         position = pos;
         rotation = rot;
         this.scale = scale;
+        this.shaderProgram = shaderProgram;
         
         vertexCount = indices.length;
         
@@ -94,6 +95,17 @@ public class GameObject extends Entity {
         
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
+    }
+    
+    /**
+     * Creates a GameObject from an .obj file.
+     * @param pos      The position of the GameObject.
+     * @param scale    The scale of the GameObject.
+     * @param rot      The rotation of the GameObject.
+     * @param location The location of the .obj file.
+     */
+    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, String location) {
+    
     }
     
     public void translate(float dx, float dy, float dz) {
@@ -158,6 +170,10 @@ public class GameObject extends Entity {
     
     int getVertexCount() {
         return vertexCount;
+    }
+    
+    ShaderProgram getShaderProgram() {
+        return shaderProgram;
     }
     
     public static void delete() {

@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import static org.lwjgl.glfw.GLFW.glfwInit;

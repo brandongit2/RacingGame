@@ -3,12 +3,13 @@ package game;
 import engine.*;
 import org.joml.Vector3f;
 
+import static game.Shaders.TEXTURED_SHADER;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class RacingGame {
-    private double prevMouseX = 0;
-    private double prevMouseY = 0;
-    private boolean firstCall = true;
+    private double  prevMouseX = 0;
+    private double  prevMouseY = 0;
+    private boolean firstCall  = true;
     
     static volatile boolean gameIsRunning = true;
     
@@ -18,6 +19,7 @@ public class RacingGame {
         Util.init();
         
         Window window = new Window(1000, 900, "Racing Game", "mainWindow");
+        new Shaders();
         Camera camera = new Camera(
           new Vector3f(
             0, 0, 0
@@ -26,7 +28,7 @@ public class RacingGame {
         ), 60.0f, "primaryCamera"
         );
         Renderer renderer = new Renderer("mainRenderer");
-    
+        
         glfwSetInputMode(window.getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(window.getHandle(), (long evWindow, double mouseX, double mouseY) -> {
             if (firstCall) {
@@ -44,12 +46,8 @@ public class RacingGame {
             }
         });
         
-        window.setVertexShader("/game/vertex.glsl");
-        Game.getCurrentWindow().setFragmentShader("/game/fragment.glsl");
-        Game.getCurrentWindow().linkShaderProgram();
-        
         // Creates a cube.
-        cube = new GameObject(
+        window.addObject(new GameObject(
           new Vector3f(
             0f, 0f, -3f
           ), new Vector3f(
@@ -82,8 +80,7 @@ public class RacingGame {
           6, 1, 0, 6, 0, 4,
           2, 1, 6, 2, 6, 7,
           7, 6, 4, 7, 4, 5
-        });
-        window.addObject(cube);
+        }, TEXTURED_SHADER));
         
         window.addObject(new GameObject(
           new Vector3f(0f, -1f, -1f),
@@ -103,8 +100,7 @@ public class RacingGame {
           }, new int[] {
           0, 1, 2,
           2, 1, 3
-        }
-        ));
+        }, TEXTURED_SHADER));
         
         Thread gameLoop = new Thread(new GameLoop(), "gameLoopThread");
         gameLoop.start();

@@ -57,7 +57,6 @@ public class Camera extends Entity {
     }
     
     private void transform() {
-        System.out.println(orientation.x);
         viewMatrix.rotation(0f, 0f, 1f, 0f);
         viewMatrix.rotate((float) Math.toRadians(orientation.z), new Vector3f(0f, 0f, 1f));
         viewMatrix.rotate((float) Math.toRadians(orientation.y), new Vector3f(1f, 0f, 0f));

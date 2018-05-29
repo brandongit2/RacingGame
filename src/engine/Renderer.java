@@ -16,8 +16,6 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 public class Renderer {
-    private static HashMap<String, Integer> uniforms   = new HashMap<>();
-    
     public Renderer(String name) {
         Game.renderers.put(name, this);
         Game.setCurrentRenderer(name);
@@ -55,25 +53,5 @@ public class Renderer {
         }
     
         glfwSwapBuffers(glfwGetCurrentContext());
-    }
-    
-    public void createUniform(String name, int programId) throws RuntimeException {
-        int uniformLocation = glGetUniformLocation(programId, name);
-        if (uniformLocation < 0) {
-            throw new RuntimeException("Could not find uniform " + name);
-        }
-        uniforms.put(name, uniformLocation);
-    }
-    
-    void setUniform(String name, Matrix4f value) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer uniformBuffer = stack.mallocFloat(16);
-            value.get(uniformBuffer);
-            glUniformMatrix4fv(uniforms.get(name), false, uniformBuffer);
-        }
-    }
-    
-    void setUniform(String name, int value) {
-        glUniform1i(uniforms.get(name), value);
     }
 }
