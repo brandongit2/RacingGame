@@ -1,14 +1,13 @@
 package engine;
 
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class Camera extends Entity {
     private static       Matrix4f projectionMatrix;
     private static       Matrix4f viewMatrix = new Matrix4f();
     private              Vector3f position   = new Vector3f(0, 0, 0);
-    private Vector3f orientation = new Vector3f(0, 0, -1);
+    private Vector3f orientation = new Vector3f(0, 0, 0);
     private              float    fov;
     private static final float    Z_NEAR     = 0.01f;
     private static final float    Z_FAR      = 1000.0f;
@@ -38,23 +37,37 @@ public class Camera extends Entity {
         position.y += dy;
         position.z += dz;
         
-        viewMatrix.translate(dx, dy, dz);
+        transform();
     }
     
     public void rotate(float yaw, float pitch, float roll) {
-        Quaternionf quaternion = new Quaternionf(orientation.x, orientation.y, orientation.z, (float) Math.toRadians(roll));
-        Vector3f v = orientation.cross(new Vector3f(0, 1, 0)).normalize();
-        quaternion.add(v.x, v.y, v.z, (float) Math.cos(Math.toRadians(pitch) / 2));
-        quaternion.add(0, 1, 0, (float) Math.toRadians(yaw));
-        quaternion.normalize();
-        
-        System.out.println(quaternion);
-        viewMatrix.rotate(quaternion);
-        
         orientation.x += yaw;
         orientation.y += pitch;
         orientation.z += roll;
-        orientation.normalize();
+        orientation.x %= 360;
+        orientation.y %= 360;
+        orientation.z %= 360;
+        if (orientation.y < -90) {
+            orientation.y = -90;
+        } else if (orientation.y > 90) {
+            orientation.y = 90;
+        }
+        
+        transform();
+    }
+    
+    private void transform() {
+        System.out.println(orientation.x);
+        viewMatrix.rotation(0f, 0f, 1f, 0f);
+        viewMatrix.rotate((float) Math.toRadians(orientation.z), new Vector3f(0f, 0f, 1f));
+        viewMatrix.rotate((float) Math.toRadians(orientation.y), new Vector3f(1f, 0f, 0f));
+        viewMatrix.rotate((float) Math.toRadians(orientation.x), new Vector3f(0f, 1f, 0f));
+    
+        viewMatrix.translate(position);
+    }
+    
+    public Vector3f getOrientation() {
+        return orientation;
     }
     
     Matrix4f getViewMatrix() {

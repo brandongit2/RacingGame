@@ -1,6 +1,7 @@
 package game;
 
 import engine.Game;
+import org.joml.Vector3f;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.glfwGetKey;
@@ -35,17 +36,19 @@ public class GameLoop implements Runnable {
     }
     
     private void input() {
+        float orientationX = Game.getCurrentCamera().getOrientation().x;
+        
         if (isKeyPressed(GLFW_KEY_W)) {
-            Game.getCurrentCamera().translate(0.0f, 0.0f, 0.01f);
+            Game.getCurrentCamera().translate((float) Math.sin(Math.toRadians(orientationX)) / -40, 0.0f, (float) Math.cos(Math.toRadians(orientationX)) / 40);
         }
         if (isKeyPressed(GLFW_KEY_A)) {
-            Game.getCurrentCamera().translate(0.01f, 0.0f, 0.0f);
+            Game.getCurrentCamera().translate((float) Math.cos(Math.toRadians(orientationX)) / 40, 0.0f, (float) Math.sin(Math.toRadians(orientationX)) / 40);
         }
         if (isKeyPressed(GLFW_KEY_S)) {
-            Game.getCurrentCamera().translate(0.00f, 0.0f, -0.01f);
+            Game.getCurrentCamera().translate((float) Math.sin(Math.toRadians(orientationX)) / 40, 0.0f, (float) Math.cos(Math.toRadians(orientationX)) / -40);
         }
         if (isKeyPressed(GLFW_KEY_D)) {
-            Game.getCurrentCamera().translate(-0.01f, 0.0f, 0.0f);
+            Game.getCurrentCamera().translate((float) Math.cos(Math.toRadians(orientationX)) / -40, 0.0f, (float) Math.sin(Math.toRadians(orientationX)) / -40);
         }
     }
     

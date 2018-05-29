@@ -8,6 +8,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class RacingGame {
     private double prevMouseX = 0;
     private double prevMouseY = 0;
+    private boolean firstCall = true;
     
     static volatile boolean gameIsRunning = true;
     
@@ -16,19 +17,23 @@ public class RacingGame {
     private void run() {
         Util.init();
         
-        Window window = new Window(1600, 900, "Racing Game", "mainWindow");
+        Window window = new Window(1000, 900, "Racing Game", "mainWindow");
         Camera camera = new Camera(
           new Vector3f(
             0, 0, 0
           ), new Vector3f(
           0, 0, 0
-        ), 150.0f, "primaryCamera"
+        ), 60.0f, "primaryCamera"
         );
         Renderer renderer = new Renderer("mainRenderer");
     
         glfwSetInputMode(window.getHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(window.getHandle(), (long evWindow, double mouseX, double mouseY) -> {
-            camera.rotate((float) (mouseX - prevMouseX) / 200, (float) (mouseY - prevMouseY) / 200, 0.0f);
+            if (firstCall) {
+                firstCall = false;
+            } else {
+                camera.rotate((float) (mouseX - prevMouseX) / 10, (float) (mouseY - prevMouseY) / 10, 0.0f);
+            }
             prevMouseX = mouseX;
             prevMouseY = mouseY;
         });
