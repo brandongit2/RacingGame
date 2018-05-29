@@ -3,6 +3,7 @@ package engine;
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.*;
 
@@ -27,8 +29,87 @@ public class GameObject extends Entity {
     private        int                   vertexVaoId;
     private        int                   vertexCount;
     private        Matrix4f              modelMatrix = new Matrix4f();
-    private ShaderProgram shaderProgram;
+    private        ShaderProgram         shaderProgram;
     
+    /**
+     * Creates a plain, untextured GameObject.
+     *
+     * @param pos           The position of the GameObject.
+     * @param scale         The scale of the GameObject.
+     * @param rot           The rotation of the GameObject.
+     * @param vertices      The vertices of the GameObject.
+     * @param indices       The indices for the GameObject data.
+     * @param color         The color of the GameObject.
+     * @param shaderProgram The ShaderProgram used to render the GameObject.
+     */
+    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, int[] indices, Vector4f color, ShaderProgram shaderProgram) {
+        modelMatrix.translate(pos.x, pos.y, pos.z)
+                   .scale(scale.x, scale.y, scale.z);
+        modelMatrix.rotate((float) Math.toRadians(rot.z), new Vector3f(0, 0, 1));
+        modelMatrix.rotate((float) Math.toRadians(rot.y), new Vector3f(0, 1, 0));
+        modelMatrix.rotate((float) Math.toRadians(rot.x), new Vector3f(1, 0, 0));
+        
+        position = pos;
+        rotation = rot;
+        this.scale = scale;
+        this.shaderProgram = shaderProgram;
+        
+        glUseProgram(this.shaderProgram.getProgramId());
+        this.shaderProgram.setUniform("isTextured", GL_FALSE);
+        this.shaderProgram.setUniform("color", color);
+        
+        vertexCount = indices.length;
+        
+        IntBuffer   indexBuffer;
+        int         indicesVboId;
+        FloatBuffer vertexBuffer;
+        int         vertexVboId;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            // Create index buffer.
+            indexBuffer = stack.callocInt(indices.length + 1);
+            indexBuffer.put(indices).flip();
+            
+            // Create index VBO.
+            indicesVboId = glGenBuffers();
+            vbos.add(indicesVboId);
+            
+            // Create vertex buffer.
+            vertexBuffer = stack.callocFloat(vertices.length);
+            vertexBuffer.put(vertices).flip();
+            
+            // Create vertex VBO.
+            vertexVboId = glGenBuffers();
+            vbos.add(vertexVboId);
+        }
+        
+        // Create vertex VAO.
+        vertexVaoId = glGenVertexArrays();
+        glBindVertexArray(vertexVaoId);
+        vaos.add(vertexVaoId);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vertexVboId);
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesVboId);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+    
+    /**
+     * Creates a textured GameObject.
+     *
+     * @param pos             The position of the GameObject.
+     * @param scale           The scale of the GameObject.
+     * @param rot             The rotation of the GameObject.
+     * @param vertices        The vertices of the GameObject.
+     * @param textureLocation The file path for the texture of the GameObject.
+     * @param textureCoords   The texture coordinates for the GameObject.
+     * @param indices         The indices for the GameObject data.
+     * @param shaderProgram   The ShaderProgram used to render the GameObject.
+     */
     public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, float[] vertices, String textureLocation, float[] textureCoords, int[] indices, ShaderProgram shaderProgram) {
         modelMatrix.translate(pos.x, pos.y, pos.z)
                    .scale(scale.x, scale.y, scale.z);
@@ -40,6 +121,9 @@ public class GameObject extends Entity {
         rotation = rot;
         this.scale = scale;
         this.shaderProgram = shaderProgram;
+        
+        this.shaderProgram.setUniform("isTextured", GL_TRUE);
+        this.shaderProgram.setUniform("textureSampler", 0);
         
         vertexCount = indices.length;
         
@@ -99,12 +183,14 @@ public class GameObject extends Entity {
     
     /**
      * Creates a GameObject from an .obj file.
-     * @param pos      The position of the GameObject.
-     * @param scale    The scale of the GameObject.
-     * @param rot      The rotation of the GameObject.
-     * @param location The location of the .obj file.
+     *
+     * @param pos           The position of the GameObject.
+     * @param scale         The scale of the GameObject.
+     * @param rot           The rotation of the GameObject.
+     * @param location      The location of the .obj file.
+     * @param shaderProgram The ShaderProgram used to render the GameObject.
      */
-    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, String location) {
+    public GameObject(Vector3f pos, Vector3f scale, Vector3f rot, String location, ShaderProgram shaderProgram) {
     
     }
     
@@ -146,7 +232,7 @@ public class GameObject extends Entity {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, textureBuffer);
             glGenerateMipmap(GL_TEXTURE_2D);
             
-            Game.getCurrentRenderer().setUniform("textureSampler", 0);
+            shaderProgram.setUniform("textureSampler", 0);
             
             return textureId;
         } catch (IOException e) {

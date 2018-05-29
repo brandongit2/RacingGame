@@ -6,6 +6,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
@@ -21,34 +22,45 @@ public class Renderer {
         Game.setCurrentRenderer(name);
     }
     
-    public void render(ArrayList<GameObject> objects) {
+    public void render(HashMap<String, GameObject> objects) {
         Window window = Game.getCurrentWindow();
         Camera camera = Game.getCurrentCamera();
         
         if (window.hasBeenResized()) {
             glViewport(0, 0, window.getWidth(), window.getHeight());
-            
-            setUniform("projectionMatrix", camera.getProjectionMatrix());
         }
         
         glClearColor(0.0f, 0.6f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        setUniform("viewMatrix", camera.getViewMatrix());
-        
-        for (GameObject object : objects) {
+        for (Map.Entry<String, GameObject> entry : objects.entrySet()) {
+            GameObject object = entry.getValue();
+            
+            glUseProgram(object.getShaderProgram().getProgramId());
+    
+            if (window.hasBeenResized()) {
+                object.getShaderProgram().setUniform("projectionMatrix", camera.getProjectionMatrix());
+            }
+            
+            object.getShaderProgram().setUniform("viewMatrix", camera.getViewMatrix());
+            
             glBindVertexArray(object.getVertexVaoId());
-            glEnableVertexAttribArray(0);
-            glEnableVertexAttribArray(1);
+            for (int i = 0; i < object.getShaderProgram().getNumAttribArrays(); i++) {
+                glEnableVertexAttribArray(i);
+            }
 
-            setUniform("modelMatrix", object.getModelMatrix());
+            object.getShaderProgram().setUniform("modelMatrix", object.getModelMatrix());
 
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, object.getTextureId());
+            if (object.getShaderProgram().isTextured()) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, object.getTextureId());
+            }
+            
             glDrawElements(GL_TRIANGLES, object.getVertexCount(), GL_UNSIGNED_INT, 0);
-
-            glDisableVertexAttribArray(0);
-            glDisableVertexAttribArray(1);
+    
+            for (int i = 0; i < object.getShaderProgram().getNumAttribArrays(); i++) {
+                glDisableVertexAttribArray(i);
+            }
             glBindVertexArray(0);
         }
     

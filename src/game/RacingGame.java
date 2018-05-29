@@ -2,8 +2,9 @@ package game;
 
 import engine.*;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
-import static game.Shaders.TEXTURED_SHADER;
+import static game.Shaders.PLAIN_SHADER;
 import static org.lwjgl.glfw.GLFW.*;
 
 public class RacingGame {
@@ -80,7 +81,7 @@ public class RacingGame {
           6, 1, 0, 6, 0, 4,
           2, 1, 6, 2, 6, 7,
           7, 6, 4, 7, 4, 5
-        }, TEXTURED_SHADER));
+        }, PLAIN_SHADER), "cube");
         
         window.addObject(new GameObject(
           new Vector3f(0f, -1f, -1f),
@@ -100,7 +101,23 @@ public class RacingGame {
           }, new int[] {
           0, 1, 2,
           2, 1, 3
-        }, TEXTURED_SHADER));
+        }, PLAIN_SHADER), "floor");
+        
+        window.addObject(new GameObject(
+          new Vector3f(-4f, 1f, 0f),
+          new Vector3f(1f, 1f, 1f),
+          new Vector3f(0f, 90f, 0f),
+          new float[] {
+            -1f, 1f, 0f,
+            -1f, -1f, 0f,
+            1f, -1f, 0f,
+            1f, 1f, 0f
+          }, new int[] {
+          0, 1, 3,
+          3, 1, 2
+        },
+          new Vector4f(1.0f, 1.0f, 0.0f, 1.0f),
+          PLAIN_SHADER), "wall");
         
         Thread gameLoop = new Thread(new GameLoop(), "gameLoopThread");
         gameLoop.start();

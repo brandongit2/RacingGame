@@ -1,6 +1,7 @@
 package engine;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
@@ -12,21 +13,26 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 public class ShaderProgram {
     private static HashMap<String, Integer> shaderPrograms = new HashMap<>();
     
-    private int programId;
+    private int                      programId;
     private HashMap<String, Integer> uniforms = new HashMap<>();
+    private int                      numAttribArrays;
+    private boolean                  isTextured;
     
-    public ShaderProgram(String name, String vertexShaderLocation, String fragmentShaderLocation, String[] uniforms) {
+    public ShaderProgram(String name, String vertexShaderLocation, String fragmentShaderLocation, String[] uniforms, int numAttribArrays, boolean isTextured) {
         programId = glCreateProgram();
         if (programId == NULL) { // Verify that shader program was created.
             throw new RuntimeException("Could not create shader program.");
         }
-    
+        
+        this.numAttribArrays = numAttribArrays;
+        this.isTextured = isTextured;
+        
         shaderPrograms.put(name, programId);
         
         setVertexShader(vertexShaderLocation);
         setFragmentShader(fragmentShaderLocation);
         
-        linkShaderProgram(name);
+        linkShaderProgram();
         
         for (String uniform : uniforms) {
             try {
@@ -41,9 +47,8 @@ public class ShaderProgram {
     /**
      * Finalizes the shaders (links them to the shader program).
      */
-    public void linkShaderProgram(String program) {
+    public void linkShaderProgram() {
         Renderer renderer = Game.getCurrentRenderer();
-        int programId = shaderPrograms.get(program);
         
         glLinkProgram(programId);
         if (glGetProgrami(programId, GL_LINK_STATUS) == NULL) {
@@ -78,8 +83,13 @@ public class ShaderProgram {
         glUniform1i(uniforms.get(name), value);
     }
     
+    void setUniform(String name, Vector4f value) {
+        glUniform4f(uniforms.get(name), value.x, value.y, value.z, value.w);
+    }
+    
     /**
      * Creates a shader.
+     *
      * @param shaderCode The raw shader code.
      * @param shaderType The type of shader to be compiled.
      */
@@ -102,6 +112,7 @@ public class ShaderProgram {
     
     /**
      * Sets the vertex shader.
+     *
      * @param location The file location for the vertex shader.
      */
     public void setVertexShader(String location) {
@@ -110,10 +121,22 @@ public class ShaderProgram {
     
     /**
      * Sets the fragment shader.
+     *
      * @param location The file location for the fragment shader.
      */
     public void setFragmentShader(String location) {
         createShader(Util.loadResource(location), GL_FRAGMENT_SHADER);
     }
     
+    public int getNumAttribArrays() {
+        return numAttribArrays;
+    }
+    
+    public boolean isTextured() {
+        return isTextured;
+    }
+    
+    public int getProgramId() {
+        return programId;
+    }
 }

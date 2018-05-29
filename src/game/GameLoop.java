@@ -16,7 +16,7 @@ public class GameLoop implements Runnable {
         long timeElapsed;
         
         while (RacingGame.gameIsRunning) {
-            RacingGame.cube.rotate(0.0f, 0.3f, 0.0f);
+            Game.getCurrentWindow().getObjects().get("cube").rotate(0.0f, 0.3f, 0.0f);
             //Game.getCurrentCamera().rotate();
             
             timeElapsed = startTime - System.nanoTime();

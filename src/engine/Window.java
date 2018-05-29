@@ -6,22 +6,21 @@ import org.lwjgl.opengl.GLUtil;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 /**
  * Contains a window object.
  */
 public class Window {
-    private int                   width;
-    private int                   height;
-    private long                  handle;
-    private int                   programId;
-    private ArrayList<GameObject> objects        = new ArrayList<>();
-    private boolean               hasBeenResized = true;
+    private int                         width;
+    private int                         height;
+    private long                        handle;
+    private HashMap<String, GameObject> objects        = new HashMap<>();
+    private boolean                     hasBeenResized = true;
     
     /**
      * Create a window.
@@ -76,12 +75,13 @@ public class Window {
     
     /**
      * Adds a GameObject to the game.
+     *
      * @param object The object to be added.
      */
-    public void addObject(GameObject object) {
-        Game.getCurrentRenderer().setUniform("modelMatrix", object.getModelMatrix());
+    public void addObject(GameObject object, String name) {
+        object.getShaderProgram().setUniform("modelMatrix", object.getModelMatrix());
         
-        objects.add(object);
+        objects.put(name, object);
     }
     
     public void render() {
@@ -103,7 +103,7 @@ public class Window {
         return handle;
     }
     
-    public ArrayList<GameObject> getObjects() {
+    public HashMap<String, GameObject> getObjects() {
         return objects;
     }
     

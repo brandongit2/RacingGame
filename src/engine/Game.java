@@ -1,11 +1,13 @@
 package engine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Game {
-    static         HashMap<String, Window>   windows   = new HashMap<>();
-    static         HashMap<String, Renderer> renderers = new HashMap<>();
-    static         HashMap<String, Camera>   cameras   = new HashMap<>();
+    static         HashMap<String, Window>   windows        = new HashMap<>();
+    static         HashMap<String, Renderer> renderers      = new HashMap<>();
+    static         HashMap<String, Camera>   cameras        = new HashMap<>();
+    static         ArrayList<ShaderProgram>  shaderPrograms = new ArrayList<>();
     private static String                    currentWindow;
     private static String                    currentRenderer;
     private static String                    currentCamera;
@@ -56,5 +58,13 @@ public class Game {
     
     public static String getCurrentCameraId() {
         return currentCamera;
+    }
+    
+    public static void addShader(ShaderProgram program) {
+        shaderPrograms.add(program);
+    }
+    
+    public static ArrayList<ShaderProgram> getShaderPrograms() {
+        return shaderPrograms;
     }
 }
