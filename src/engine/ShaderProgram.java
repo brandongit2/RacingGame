@@ -16,16 +16,14 @@ public class ShaderProgram {
     private int                      programId;
     private HashMap<String, Integer> uniforms = new HashMap<>();
     private int                      numAttribArrays;
-    private boolean                  isTextured;
     
-    public ShaderProgram(String name, String vertexShaderLocation, String fragmentShaderLocation, String[] uniforms, int numAttribArrays, boolean isTextured) {
+    public ShaderProgram(String name, String vertexShaderLocation, String fragmentShaderLocation, String[] uniforms, int numAttribArrays) {
         programId = glCreateProgram();
         if (programId == NULL) { // Verify that shader program was created.
             throw new RuntimeException("Could not create shader program.");
         }
         
         this.numAttribArrays = numAttribArrays;
-        this.isTextured = isTextured;
         
         shaderPrograms.put(name, programId);
         
@@ -130,10 +128,6 @@ public class ShaderProgram {
     
     public int getNumAttribArrays() {
         return numAttribArrays;
-    }
-    
-    public boolean isTextured() {
-        return isTextured;
     }
     
     public int getProgramId() {

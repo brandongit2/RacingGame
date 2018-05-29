@@ -37,7 +37,8 @@ public class Renderer {
             GameObject object = entry.getValue();
             
             glUseProgram(object.getShaderProgram().getProgramId());
-    
+            object.getShaderProgram().setUniform("isTextured", object.isTextured() ? GL_TRUE : GL_FALSE);
+            
             if (window.hasBeenResized()) {
                 object.getShaderProgram().setUniform("projectionMatrix", camera.getProjectionMatrix());
             }
@@ -51,7 +52,7 @@ public class Renderer {
 
             object.getShaderProgram().setUniform("modelMatrix", object.getModelMatrix());
 
-            if (object.getShaderProgram().isTextured()) {
+            if (object.isTextured()) {
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, object.getTextureId());
             }

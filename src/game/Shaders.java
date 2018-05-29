@@ -8,7 +8,7 @@ public class Shaders {
     
     static {
         PLAIN_SHADER = new ShaderProgram("plainShader", "/game/vertex.glsl", "/game/fragment.glsl",
-                                         new String[] {"projectionMatrix", "viewMatrix", "modelMatrix", "textureSampler", "color", "isTextured"}, 2, true);
+                                         new String[] {"projectionMatrix", "viewMatrix", "modelMatrix", "textureSampler", "color", "isTextured"}, 2);
         Game.addShader(PLAIN_SHADER);
     }
 }

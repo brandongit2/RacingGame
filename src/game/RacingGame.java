@@ -84,7 +84,7 @@ public class RacingGame {
         }, PLAIN_SHADER), "cube");
         
         window.addObject(new GameObject(
-          new Vector3f(0f, -1f, -1f),
+          new Vector3f(0f, -1f, 0f),
           new Vector3f(1f, 1f, 1f),
           new Vector3f(0f, 0f, 0f),
           new float[] {
@@ -102,6 +102,26 @@ public class RacingGame {
           0, 1, 2,
           2, 1, 3
         }, PLAIN_SHADER), "floor");
+    
+        window.addObject(new GameObject(
+          new Vector3f(-4f, -1f, 0f),
+          new Vector3f(1f, 1f, 1f),
+          new Vector3f(90f, 0f, 0f),
+          new float[] {
+            -5f, 0f, -5f,
+            -5f, 0f, 5f,
+            5f, 0f, -5f,
+            5f, 0f, 5f
+          }, "res/floor.png",
+          new float[] {
+            0.0f, 0.0f,
+            0.0f, 20f,
+            20f, 0.0f,
+            20f, 20f
+          }, new int[] {
+          0, 1, 2,
+          2, 1, 3
+        }, PLAIN_SHADER), "floor2");
         
         window.addObject(new GameObject(
           new Vector3f(-4f, 1f, 0f),
