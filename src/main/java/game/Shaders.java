@@ -8,8 +8,8 @@ class Shaders {
     static {
         PLAIN_SHADER = new ShaderProgram(
           "plainShader",
-          "/main/java/game/vertex.glsl",
-          "/main/java/game/fragment.glsl",
+          "/vertex.glsl",
+          "/fragment.glsl",
           new String[] {
             "projectionMatrix",
             "viewMatrix",

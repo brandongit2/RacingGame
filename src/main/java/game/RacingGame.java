@@ -54,121 +54,123 @@ class RacingGame {
         
         // Creates a cube.
         // @formatter:off
-        Game.getWindow("mainWindow").addObject(new GameObject(
-          new Vector3f(0f, 0f, -3f),
-          new Vector3f(1f, 3f,  1f),
-          new Vector3f(0f, 0f,  0f),
-          new float[] {
-            -0.5f,  0.5f,  0.5f,
-            -0.5f, -0.5f,  0.5f,
-             0.5f, -0.5f,  0.5f,
-             0.5f,  0.5f,  0.5f,
-            -0.5f,  0.5f, -0.5f,
-             0.5f,  0.5f, -0.5f,
-            -0.5f, -0.5f, -0.5f,
-             0.5f, -0.5f, -0.5f
-          }, "src/main/resources/emoji.png",
-          new float[] {
-            0.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f,
-            1.0f, 0.0f,
-            1.0f, 0.0f,
-            0.0f, 0.0f,
-            1.0f, 1.0f,
-            0.0f, 1.0f
-          }, new int[] {
-            0, 1, 3, 3, 1, 2,
-            4, 0, 3, 5, 4, 3,
-            3, 2, 7, 5, 3, 7,
-            6, 1, 0, 6, 0, 4,
-            2, 1, 6, 2, 6, 7,
-            7, 6, 4, 7, 4, 5
-          }, PLAIN_SHADER),
-        "cube");
-        // @formatter:on
-        
-        // @formatter:off
         Game.getWindow("mainWindow").addObject(
           new GameObject(
-            new Vector3f(0f, -1f, 0f),
-            new Vector3f(1f,  1f, 1f),
-            new Vector3f(0f,  0f, 0f),
+            new Vector3f(0f, 0f, -3f),
+            new Vector3f(1f, 3f,  1f),
+            new Vector3f(0f, 0f,  0f),
             new float[] {
-              -5f, 0f, -5f,
-              -5f, 0f,  5f,
-               5f, 0f, -5f,
-               5f, 0f,  5f
-            }, "src/main/resources/floor.png",
+              -0.5f,  0.5f,  0.5f,
+              -0.5f, -0.5f,  0.5f,
+               0.5f, -0.5f,  0.5f,
+               0.5f,  0.5f,  0.5f,
+              -0.5f,  0.5f, -0.5f,
+               0.5f,  0.5f, -0.5f,
+              -0.5f, -0.5f, -0.5f,
+               0.5f, -0.5f, -0.5f
+            }, "src/main/resources/emoji.png",
             new float[] {
               0.0f, 0.0f,
-              0.0f,  20f,
-               20f, 0.0f,
-               20f,  20f
-            }, new int[] {
-              0, 1, 2,
-              2, 1, 3
-            }, PLAIN_SHADER
-          ), "floor"
-        );
-        // @formatter:on
-        
-        // @formatter:off
-        Game.getWindow("mainWindow").addObject(
-          new GameObject(
-            new Vector3f(-4f, -1f, 0f),
-            new Vector3f( 1f,  1f, 1f),
-            new Vector3f(90f,  0f, 0f),
-            new float[] {
-              -5f, 0f, -5f,
-              -5f, 0f,  5f,
-               5f, 0f, -5f,
-               5f, 0f,  5f
-            }, "src/main/resrouces/floor.png",
-            new float[] {
+              0.0f, 1.0f,
+              1.0f, 1.0f,
+              1.0f, 0.0f,
+              1.0f, 0.0f,
               0.0f, 0.0f,
-              0.0f,  20f,
-               20f, 0.0f,
-               20f,  20f
+              1.0f, 1.0f,
+              0.0f, 1.0f
             }, new int[] {
-              0, 1, 2,
-              2, 1, 3
-            }, PLAIN_SHADER
-          ), "floor2"
+              0, 1, 3, 3, 1, 2,
+              4, 0, 3, 5, 4, 3,
+              3, 2, 7, 5, 3, 7,
+              6, 1, 0, 6, 0, 4,
+              2, 1, 6, 2, 6, 7,
+              7, 6, 4, 7, 4, 5
+            }, PLAIN_SHADER),
+          "cube"
         );
         // @formatter:on
         
-        // @formatter:off
-        Game.getWindow("mainWindow").addObject(
-          new GameObject(
-            new Vector3f(-4f,  1f, 0f),
-            new Vector3f( 1f,  1f, 1f),
-            new Vector3f( 0f, 90f, 0f),
-            new float[] {
-              -1f,  1f, 0f,
-              -1f, -1f, 0f,
-               1f, -1f, 0f,
-               1f,  1f, 0f
-            }, new int[] {
-              0, 1, 3,
-              3, 1, 2
-            }, new Vector4f(1.0f, 1.0f, 0.0f, 1.0f),
-            PLAIN_SHADER
-          ),"wall"
-        );
-        // @formatter:on
-        
-        // @formatter:off
-        Game.getWindow("mainWindow").addObject(
-          new GameObject(
-            new Vector3f(0, 0, 0),
-            new Vector3f(1, 1, 1),
-            new Vector3f(0, 0, 0),
-            "src/main/resources/car.obj",
-            PLAIN_SHADER
-          ), "car"
-        );
-        // @formatter:on
+//        // @formatter:off
+//        Game.getWindow("mainWindow").addObject(
+//          new GameObject(
+//            new Vector3f(0f, -1f, 0f),
+//            new Vector3f(1f,  1f, 1f),
+//            new Vector3f(0f,  0f, 0f),
+//            new float[] {
+//              -5f, 0f, -5f,
+//              -5f, 0f,  5f,
+//               5f, 0f, -5f,
+//               5f, 0f,  5f
+//            }, "src/main/resources/floor.png",
+//            new float[] {
+//              0.0f, 0.0f,
+//              0.0f,  20f,
+//               20f, 0.0f,
+//               20f,  20f
+//            }, new int[] {
+//              0, 1, 2,
+//              2, 1, 3
+//            }, PLAIN_SHADER
+//          ), "floor"
+//        );
+//        // @formatter:on
+//
+//        // @formatter:off
+//        Game.getWindow("mainWindow").addObject(
+//          new GameObject(
+//            new Vector3f(-4f, -1f, 0f),
+//            new Vector3f( 1f,  1f, 1f),
+//            new Vector3f(90f,  0f, 0f),
+//            new float[] {
+//              -5f, 0f, -5f,
+//              -5f, 0f,  5f,
+//               5f, 0f, -5f,
+//               5f, 0f,  5f
+//            }, "src/main/resources/floor.png",
+//            new float[] {
+//              0.0f, 0.0f,
+//              0.0f,  20f,
+//               20f, 0.0f,
+//               20f,  20f
+//            }, new int[] {
+//              0, 1, 2,
+//              2, 1, 3
+//            }, PLAIN_SHADER
+//          ), "floor2"
+//        );
+//        // @formatter:on
+//
+//        // @formatter:off
+//        Game.getWindow("mainWindow").addObject(
+//          new GameObject(
+//            new Vector3f(-4f,  1f, 0f),
+//            new Vector3f( 1f,  1f, 1f),
+//            new Vector3f( 0f, 90f, 0f),
+//            new float[] {
+//              -1f,  1f, 0f,
+//              -1f, -1f, 0f,
+//               1f, -1f, 0f,
+//               1f,  1f, 0f
+//            }, new int[] {
+//              0, 1, 3,
+//              3, 1, 2
+//            }, new Vector4f(1.0f, 1.0f, 0.0f, 1.0f),
+//            PLAIN_SHADER
+//          ),"wall"
+//        );
+//        // @formatter:on
+//
+//        // @formatter:off
+//        Game.getWindow("mainWindow").addObject(
+//          new GameObject(
+//            new Vector3f(0, 0, 0),
+//            new Vector3f(1, 1, 1),
+//            new Vector3f(0, 0, 0),
+//            "src/main/resources/car.obj",
+//            PLAIN_SHADER
+//          ), "car"
+//        );
+//        // @formatter:on
         
         Thread gameLoop = new Thread(new GameLoop(), "gameLoopThread");
         gameLoop.start();

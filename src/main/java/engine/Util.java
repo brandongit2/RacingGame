@@ -23,10 +23,10 @@ public class Util {
     
     static String loadResource(String fileName) {
         String result = "";
-        try (InputStream in = Class.forName(Util.class.getName()).getResourceAsStream(fileName);) {
+        try (InputStream in = Util.class.getResourceAsStream(fileName);) {
             Scanner sc = new Scanner(in, "UTF-8");
             result = sc.useDelimiter("\\A").next();
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }

@@ -19,20 +19,20 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 import static org.lwjgl.opengl.GL30.*;
 
 public class GameObject extends Entity {
-    private ArrayList<Mesh> meshes = new ArrayList<>();
-    private        Vector3f              scale       = new Vector3f(1f, 1f, 1f);
-    private        Matrix4f              modelMatrix = new Matrix4f();
-    private        ShaderProgram         shaderProgram;
+    private ArrayList<Mesh> meshes      = new ArrayList<>();
+    private Vector3f        scale       = new Vector3f(1f, 1f, 1f);
+    private Matrix4f        modelMatrix = new Matrix4f();
+    private ShaderProgram   shaderProgram;
     
     private GameObject(Vector3f pos, Vector3f scale, Vector3f rot, ShaderProgram shaderProgram) {
         position = pos;
         rotation = rot;
         this.scale = scale;
-    
+        
         translate(pos.x, pos.y, pos.z);
         scale(scale.x, scale.y, scale.z);
         rotate(rot.x, rot.y, rot.z);
-    
+        
         this.shaderProgram = shaderProgram;
     }
     
@@ -98,7 +98,7 @@ public class GameObject extends Entity {
         
         int           numMeshes = aiScene.mNumMeshes();
         PointerBuffer aiMeshes  = aiScene.mMeshes();
-        AIMesh[] meshes = new AIMesh[numMeshes];
+        AIMesh[]      meshes    = new AIMesh[numMeshes];
         for (int i = 0; i < numMeshes; i++) {
             meshes[i] = AIMesh.create(aiMeshes.get(i));
         }
